@@ -1,1 +1,0 @@
-  -LC:/coding/cpp_shit/SDL3/lib/cmake/SDL3/lib  -LC:/coding/cpp_shit/SDL3_libs/lib  C:/coding/cpp_shit/SDL3_libs/lib/libSDL3_image.dll.a C:/coding/cpp_shit/SDL3_libs/lib/libSDL3_ttf.dll.a C:/coding/cpp_shit/SDL3/lib/libSDL3.dll.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
