@@ -7,7 +7,7 @@
 
 #include <SDL3/SDL.h>
 
-typedef struct Node {
+typedef struct {
     SDL_FPoint position;
     int id;
     int connections[MAX_CONNECTIONS];
@@ -16,9 +16,10 @@ typedef struct Node {
     bool is_selected;
     bool is_start;
     bool is_end;
+    char** street_names;
 } Node;
 
-typedef struct Graph {
+typedef struct {
   Node nodes[MAX_NODES];
   int node_count;
   int selected_start;
@@ -27,7 +28,7 @@ typedef struct Graph {
 
 void init_graph(Graph* graph);
 int add_node(Graph* graph, SDL_FPoint position);
-bool add_connection(Graph* graph, int from, int to, float weight);
+bool add_connection(Graph* graph, int from, int to, float weight, const char* street_name);
 Node* get_node_from_pos(Graph* graph, SDL_FPoint position);
 void update_node_pos(Graph* graph, int id, SDL_FPoint position);
 void clear_graph(Graph* graph);

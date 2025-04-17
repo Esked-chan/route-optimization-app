@@ -69,6 +69,11 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
         }
 
         Node* clicked_node = get_node_from_pos(graph, (SDL_FPoint){mouse_x, mouse_y});
+        if (clicked_node) {
+          for (int i = 0; i < clicked_node->connection_count; i++) {
+            SDL_Log(clicked_node->street_names[i]);
+          }
+        }
 
         switch (ui_state->mode) {
           case MODE_ADD_NODES:
@@ -88,7 +93,7 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
                 float dy = clicked_node->position.y - ui_state->connection_start->position.y;
                 float distance = sqrtf(dx * dx + dy * dy);
 
-                if (add_connection(graph, ui_state->connection_start->id, clicked_node->id, distance)) {
+                if (add_connection(graph, ui_state->connection_start->id, clicked_node->id, distance, "MANUAL STREET NAME\0")) {
                   SDL_Log("Connection added from node %d to node %d with weight %f", ui_state->connection_start->id, clicked_node->id, distance);
                 } else {
                   SDL_Log("Failed to add connection from node %d to node %d", ui_state->connection_start->id, clicked_node->id);

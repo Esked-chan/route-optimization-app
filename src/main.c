@@ -68,7 +68,6 @@ int main(int argc, char* argv[]) {
     const Path* path_to_render = ui_state.show_path && ui_state.current_path.length > 0 ? &ui_state.current_path : NULL;
     render_graph(&ctx, &graph, path_to_render, ui_state.hovered_node_id);
 
-    // Render UI
     render_ui_panel(&ctx, &ui_state);
 
     UIButton buttons[] = {

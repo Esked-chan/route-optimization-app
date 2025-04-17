@@ -128,24 +128,49 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
       SDL_RenderFillRect(ctx->renderer, &node_rect);
 
       if (ctx->font) {
-        continue;
-        char id_text[16];
-        snprintf(id_text, sizeof(id_text), "%d", node->id);
-  
-        SDL_Surface* text_surface = TTF_RenderText_Solid(ctx->font, id_text, 0, (SDL_Color){255, 255, 255, 255});
-        if (text_surface) {
-          SDL_Texture* text_texture = SDL_CreateTextureFromSurface(ctx->renderer, text_surface);
-          if (text_texture) {
-            SDL_FRect text_rect = {
-              node->position.x - text_surface->w / 2,
-              node->position.y - text_surface->h / 2,
-              (float)text_surface->w,
-              (float)text_surface->h
-            };
-            SDL_RenderTexture(ctx->renderer, text_texture, NULL, &text_rect);
-            SDL_DestroyTexture(text_texture);
-          }
-          SDL_DestroySurface(text_surface);
+        if (node->id == hovered_node_id) {
+            SDL_Color text_color = { 30, 30, 30, 255 };
+            char combined_street_names[1024] = {0};
+            for (int k = 0; node->street_names[k] != NULL; k++) {
+              bool is_duplicate = false;
+              for (int l = 0; l < k; l++) {
+                if (strcmp(node->street_names[k], node->street_names[l]) == 0) {
+                  is_duplicate = true;
+                  break;
+                }
+              }
+              if (!is_duplicate) {
+                strncat(combined_street_names, node->street_names[k], sizeof(combined_street_names) - strlen(combined_street_names) - 1);
+                if (node->street_names[k + 1] != NULL) {
+                  strncat(combined_street_names, "\n", sizeof(combined_street_names) - strlen(combined_street_names) - 1);
+                }
+              }
+            }
+            SDL_Surface* text_surface = TTF_RenderText_Blended_Wrapped(ctx->font, combined_street_names, 0, text_color, 0);
+            if (text_surface) {
+              SDL_Texture* text_texture = SDL_CreateTextureFromSurface(ctx->renderer, text_surface);
+              if (text_texture) {
+                int text_width = text_surface->w;
+                int text_height = text_surface->h;
+                SDL_FRect text_rect = {
+                  (node->position.x - text_width / 2),
+                  (node->position.y - NODE_RADIUS - text_height - 5),
+                  text_width,
+                  text_height
+                };
+                SDL_SetRenderDrawColor(ctx->renderer, 255, 255, 255, 200);
+                SDL_FRect background_rect = {
+                  text_rect.x - 5,
+                  text_rect.y - 5,
+                  text_rect.w + 10,
+                  text_rect.h + 10
+                };
+                SDL_RenderFillRect(ctx->renderer, &background_rect);
+                SDL_RenderTexture(ctx->renderer, text_texture, NULL, &text_rect);
+                SDL_DestroyTexture(text_texture);
+              }
+              SDL_DestroySurface(text_surface);
+            }
         }
       }
     }  

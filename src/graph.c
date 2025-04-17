@@ -1,6 +1,7 @@
 #include "graph.h"
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void init_graph(Graph* graph) {
   graph->node_count = 0;
@@ -12,6 +13,7 @@ void init_graph(Graph* graph) {
     graph->nodes[i].is_selected = false;
     graph->nodes[i].is_start = false;
     graph->nodes[i].is_end = false;
+    graph->nodes[i].street_names = malloc(MAX_CONNECTIONS * sizeof(char*));
   }
 }
 
@@ -38,20 +40,24 @@ int add_node(Graph* graph, SDL_FPoint position) {
     return -1;
   }
 
-  Node new_node = {
-    .position = position,
-    .id = graph->node_count,
-    .connection_count = 0,
-    .is_selected = false,
-    .is_start = false,
-    .is_end = false
-  };
+  Node* node = &graph->nodes[graph->node_count];
 
-  graph->nodes[graph->node_count] = new_node;
+  node->position = position;
+  node->id = graph->node_count;
+  node->connection_count = 0;
+  node->is_selected = false;
+  node->is_start = false;
+  node->is_end = false;
+  node->street_names = malloc(MAX_CONNECTIONS * sizeof(char*));
+  if (!node->street_names) {
+    SDL_Log("Failed to allocate memory for street names");
+    return -1;
+  }
+
   return graph->node_count++;
 }
 
-bool add_connection(Graph* graph, int from, int to, float weight) {
+bool add_connection(Graph* graph, int from, int to, float weight, const char* street_name) {
   if (from < 0 || from >= graph->node_count || to < 0 || to >= graph->node_count) {
     SDL_Log("Invalid node IDs: %d, %d", from, to);
     return false;
@@ -71,13 +77,20 @@ bool add_connection(Graph* graph, int from, int to, float weight) {
     SDL_Log("Max connections reached for node %d", from);
     return false;
   }
+
+  if (to_node->connection_count >= MAX_CONNECTIONS) {
+    SDL_Log("Max connections reached for node %d", to);
+    return false;
+  }
   
   from_node->connections[from_node->connection_count] = to;
   from_node->connection_weights[from_node->connection_count] = weight;
+  from_node->street_names[from_node->connection_count] = strdup(street_name);
   from_node->connection_count++;
 
   to_node->connections[to_node->connection_count] = from;
   to_node->connection_weights[to_node->connection_count] = weight;
+  to_node->street_names[to_node->connection_count] = strdup(street_name);
   to_node->connection_count++;
 
   return true;
@@ -105,6 +118,12 @@ void update_node_pos(Graph* graph, int id, SDL_FPoint position) {
 }
 
 void clear_graph(Graph* graph) {
+  for (int i = 0; i < graph->node_count; i++) {
+    for (int j = 0; j < graph->nodes[i].connection_count; j++) {
+      free(graph->nodes[i].street_names[j]);
+    }
+    free(graph->nodes[i].street_names);
+  }
   init_graph(graph);
 }
 
@@ -113,23 +132,10 @@ void remove_node(Graph* graph, int id) {
     return;
   }
 
-  for (int i = 0; i < graph->node_count; i++) {
-    if (i == id) {
-      continue;
-    }
-
-    Node* node = &graph->nodes[i];
-    for (int j = 0; j < node->connection_count; j++) {
-      if (node->connections[j] == id) {
-        for (int k = j; k < node->connection_count - 1; k++) {
-          node->connections[k] = node->connections[k + 1];
-          node->connection_weights[k] = node->connection_weights[k + 1];
-        }
-        node->connection_count--;
-        j--;
-      }
-    }
+  for (int j = 0; j < graph->nodes[id].connection_count; j++) {
+    free(graph->nodes[id].street_names[j]);
   }
+  free(graph->nodes[id].street_names); 
 
   for (int i = id; i < graph->node_count - 1; i++) {
     graph->nodes[i] = graph->nodes[i + 1];
