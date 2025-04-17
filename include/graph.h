@@ -31,7 +31,7 @@ typedef struct {
 void init_graph(Graph* graph);
 int add_node(Graph* graph, SDL_FPoint position);
 bool add_connection(Graph* graph, int from, int to, float distance, float friction, const char* street_name);
-Node* get_node_from_pos(Graph* graph, SDL_FPoint position);
+Node* get_node_from_pos(Graph* graph, SDL_FPoint position, float camera_x, float camera_y, float zoom, int width, int height);
 void update_node_pos(Graph* graph, int id, SDL_FPoint position);
 void clear_graph(Graph* graph);
 void remove_node(Graph* graph, int id);

@@ -12,6 +12,9 @@ typedef struct {
   TTF_Font* font;
   int width;
   int height;
+  float camera_x;
+  float camera_y;
+  float zoom;
 } RenderContext;
 
 typedef struct {
@@ -29,5 +32,6 @@ typedef struct {
 void init_render_context(RenderContext* ctx, const char* title, int width, int height);
 void cleanup_render_context(RenderContext* ctx);
 void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id);
+SDL_FPoint transform_point(RenderContext* ctx, SDL_FPoint point);
 
 #endif // RENDER_H

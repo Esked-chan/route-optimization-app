@@ -5,6 +5,9 @@
 void init_render_context(RenderContext* ctx, const char* title, int width, int height) {
   ctx->width = width;
   ctx->height = height;
+  ctx->camera_x = width / 2;
+  ctx->camera_y = height / 2;
+  ctx->zoom = 1.0f;
 
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("SDL_Init Error: %s\n", SDL_GetError());
@@ -33,6 +36,13 @@ void init_render_context(RenderContext* ctx, const char* title, int width, int h
     SDL_Quit();
     exit(1);
   }
+}
+
+SDL_FPoint transform_point(RenderContext* ctx, SDL_FPoint point) {
+  SDL_FPoint transformed_point;
+  transformed_point.x = (point.x - ctx->camera_x) * ctx->zoom + ctx->width / 2;
+  transformed_point.y = (point.y - ctx->camera_y) * ctx->zoom + ctx->height / 2;
+  return transformed_point;
 }
 
 void cleanup_render_context(RenderContext* ctx) {
@@ -91,9 +101,13 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
           (HIGH_FRICTION_COLOR.b - LOW_FRICTION_COLOR.b) * graph->nodes[i].connection_friction[j] + LOW_FRICTION_COLOR.b,
           255
         };
+        
+        SDL_FPoint start = transform_point(ctx, node->position);
+        SDL_FPoint end = transform_point(ctx, connected_node->position);
+
         draw_thick_line(ctx->renderer,
-          node->position.x, node->position.y,
-          connected_node->position.x, connected_node->position.y, 3.f, color);
+          start.x, start.y,
+          end.x, end.y, 3.f, color);
       }
     }
   }
@@ -103,9 +117,13 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
     for (int i = 0; i < path->length - 1; i++) {
       const Node* from = &graph->nodes[path->nodes[i]];
       const Node* to = &graph->nodes[path->nodes[i + 1]];
+
+      SDL_FPoint start = transform_point(ctx, from->position);
+      SDL_FPoint end = transform_point(ctx, to->position);
+
       draw_thick_line(ctx->renderer,
-        from->position.x, from->position.y,
-        to->position.x, to->position.y, 4.f, PATH_COLOR);
+        start.x, start.y,
+        end.x, end.y, 5.f, PATH_COLOR);
     }
   }
 
@@ -126,11 +144,13 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
         SDL_SetRenderDrawColor(ctx->renderer, 0, 200, 0, 255);
       }
 
+      SDL_FPoint transformed_pos = transform_point(ctx, node->position);
+
       SDL_FRect node_rect = {
-        node->position.x - NODE_RADIUS,
-        node->position.y - NODE_RADIUS,
-        NODE_RADIUS * 2,
-        NODE_RADIUS * 2
+        transformed_pos.x - NODE_RADIUS * ctx->zoom,
+        transformed_pos.y - NODE_RADIUS * ctx->zoom,
+        NODE_RADIUS * 2 * ctx->zoom,
+        NODE_RADIUS * 2 * ctx->zoom
       };
       SDL_RenderFillRect(ctx->renderer, &node_rect);
 
@@ -160,8 +180,8 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
                 int text_width = text_surface->w;
                 int text_height = text_surface->h;
                 SDL_FRect text_rect = {
-                  (node->position.x - text_width / 2),
-                  (node->position.y - NODE_RADIUS - text_height - 5),
+                  20,
+                  ctx->height - 20 - text_height,
                   text_width,
                   text_height
                 };

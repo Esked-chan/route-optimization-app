@@ -22,6 +22,7 @@ typedef struct {
   Node* connection_start;
   Path current_path;
   bool show_path;
+  bool panning;
 } UIState;
 
 void handle_events(SDL_Event* event, Graph* graph, UIState* ui_state, RenderContext* ctx);

@@ -1,5 +1,7 @@
 #include "ui.h"
+
 #include <math.h>
+#include "SDL3/SDL_mouse.h"
 
 void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderContext* ctx) {
   switch (event->type) {
@@ -68,7 +70,7 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
           }
         }
 
-        Node* clicked_node = get_node_from_pos(graph, (SDL_FPoint){mouse_x, mouse_y});
+        Node* clicked_node = get_node_from_pos(graph, (SDL_FPoint){mouse_x, mouse_y}, ctx->camera_x, ctx->camera_y, ctx->zoom, ctx->width, ctx->height);
         if (clicked_node) {
           for (int i = 0; i < clicked_node->connection_count; i++) {
             SDL_Log(clicked_node->street_names[i]);
@@ -163,6 +165,10 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
           break;
         }
       }
+      if (event->button.button == SDL_BUTTON_RIGHT) {
+        ui_state->panning = true;
+        SDL_SetWindowRelativeMouseMode(ctx->window, true);
+      }
     break;
 
     case SDL_EVENT_MOUSE_BUTTON_UP:
@@ -177,11 +183,15 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
             SDL_Log("Failed to find path from %d to %d", graph->selected_start, graph->selected_end);
         }
       }
+      if (event->button.button == SDL_BUTTON_RIGHT) {
+        ui_state->panning = false;
+        SDL_SetWindowRelativeMouseMode(ctx->window, false);
+      }
     break;
 
     case SDL_EVENT_MOUSE_MOTION:
       ui_state->hovered_node_id = -1;
-      Node* hovered_node = get_node_from_pos(graph, (SDL_FPoint){event->motion.x, event->motion.y});
+      Node* hovered_node = get_node_from_pos(graph, (SDL_FPoint){event->motion.x, event->motion.y}, ctx->camera_x, ctx->camera_y, ctx->zoom, ctx->width, ctx->height);
       if (hovered_node) {
         ui_state->hovered_node_id = hovered_node->id;
       }
@@ -206,6 +216,26 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
         }
       }
       
+      if (ui_state->panning) {
+        ctx->camera_x -= event->motion.xrel / ctx->zoom;
+        ctx->camera_y -= event->motion.yrel / ctx->zoom;
+      }
+    break;
+
+    case SDL_EVENT_MOUSE_WHEEL:
+      float zoom_factor = (event->wheel.y > 0) ? 1.1f : 0.9f;
+      float old_zoom = ctx->zoom;
+      ctx->zoom *= zoom_factor;
+
+      float mouse_x, mouse_y;
+      SDL_GetMouseState(&mouse_x, &mouse_y);
+
+      float world_mouse_x = (mouse_x - ctx->width / 2) / old_zoom + ctx->camera_x;
+      float world_mouse_y = (mouse_y - ctx->height / 2) / old_zoom + ctx->camera_y;
+
+      ctx->camera_x = world_mouse_x - (mouse_x - ctx->width / 2) / ctx->zoom;
+      ctx->camera_y = world_mouse_y - (mouse_y - ctx->height / 2) / ctx->zoom;
+
     break;
   }
 }

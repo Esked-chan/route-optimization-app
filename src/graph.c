@@ -116,14 +116,18 @@ bool add_connection(Graph* graph, int from, int to, float distance, float fricti
   return true;
 }
 
-Node* get_node_from_pos(Graph* graph, SDL_FPoint position) {
+Node* get_node_from_pos(Graph* graph, SDL_FPoint position, float camera_x, float camera_y, float zoom, int width, int height) {
+  SDL_FPoint world_position;
+  world_position.x = (position.x - width / 2) / zoom + camera_x;
+  world_position.y = (position.y - height / 2) / zoom + camera_y;
+
   for (int i = 0; i < graph->node_count; i++) {
     Node* node = &graph->nodes[i];
-    float dx = node->position.x - position.x;
-    float dy = node->position.y - position.y;
+    float dx = node->position.x - world_position.x;
+    float dy = node->position.y - world_position.y;
     float distance = sqrtf(dx * dx + dy * dy);
     
-    if (distance <= NODE_RADIUS - 1.f) {
+    if (distance <= NODE_RADIUS) {
       return node;
     }
   }

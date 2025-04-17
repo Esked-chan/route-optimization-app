@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
     .hovered_node_id = -1,
     .connection_start = NULL,
     .current_path = { .length = 0 },
-    .show_path = true
+    .show_path = true,
+    .panning = false
   };
 
   if (!load_nodes_from_file(&graph, "assets/nodes.csv")) {

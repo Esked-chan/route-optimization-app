@@ -13,8 +13,8 @@ void render_ui_panel(RenderContext* ctx, const UIState* ui_state) {
     SDL_Surface* title_surface = TTF_RenderText_Solid(ctx->font, "Graph path finding\0", 0, white);
     SDL_Texture* title_texture = SDL_CreateTextureFromSurface(ctx->renderer, title_surface);
     SDL_FRect title_rect = {
-      ctx->width - 200 + (200 - title_surface->w) / 2, // Center horizontally in the panel
-      20, // Keep the vertical position as is
+      ctx->width - 200 + (200 - title_surface->w) / 2,
+      20,
       title_surface->w, title_surface->h
     };
     SDL_RenderTexture(ctx->renderer, title_texture, NULL, &title_rect);
