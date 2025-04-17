@@ -67,6 +67,9 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
           } else if (mouse_y >= 220 && mouse_y <= 260) {
             ui_state->mode = MODE_SELECT_END;
             SDL_Log("Mode: Select End Node");
+          } else if (mouse_y >= 270 && mouse_y <= 310) {
+            ui_state->show_nodes = !ui_state->show_nodes;
+            SDL_Log("Show Nodes: %s", ui_state->show_nodes ? "ON" : "OFF");
           }
         }
 

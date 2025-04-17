@@ -27,6 +27,15 @@ void init_render_context(RenderContext* ctx, const char* title, int width, int h
     exit(1);
   }
 
+  if (!SDL_SetRenderDrawBlendMode(ctx->renderer, SDL_BLENDMODE_BLEND)) {
+    SDL_Log("SDL_SetRenderDrawBlendMode Error: %s\n", SDL_GetError());
+    SDL_DestroyRenderer(ctx->renderer);
+    SDL_DestroyWindow(ctx->window);
+    TTF_Quit();
+    SDL_Quit();
+    exit(1);
+  }
+
   ctx->font = TTF_OpenFont("assets/font.ttf", 24);
   if (!ctx->font) {
     SDL_Log("TTF_OpenFont Error: %s\n", SDL_GetError());
@@ -85,7 +94,7 @@ void draw_thick_line(SDL_Renderer* renderer, float x1, float y1, float x2, float
   SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
 }
 
-void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id) {
+void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id, bool show_nodes) {
   // Draw connections
   for (int i = 0; i < graph->node_count; i++) {
     const Node* node = &graph->nodes[i];
@@ -131,7 +140,7 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
   for (int i = 0; i < graph->node_count; i++) {
     const Node* node = &graph->nodes[i];
 
-    bool to_render = node->is_start || node->is_end || node->is_selected || node->id == hovered_node_id;
+    bool to_render = node->is_start || node->is_end || node->is_selected || node->id == hovered_node_id || show_nodes;
 
     if (to_render) {
       if (node->id == hovered_node_id) {
@@ -142,6 +151,8 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
         SDL_SetRenderDrawColor(ctx->renderer, 200, 200, 0, 255);
       } else if (node->is_start) {
         SDL_SetRenderDrawColor(ctx->renderer, 0, 200, 0, 255);
+      } else if (show_nodes) {
+        SDL_SetRenderDrawColor(ctx->renderer, 10, 10, 50, 50);
       }
 
       SDL_FPoint transformed_pos = transform_point(ctx, node->position);
@@ -200,6 +211,7 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
             }
         }
       }
-    }  
+    }
+    
   }
 }

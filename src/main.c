@@ -39,7 +39,8 @@ int main(int argc, char* argv[]) {
     .connection_start = NULL,
     .current_path = { .length = 0 },
     .show_path = true,
-    .panning = false
+    .panning = false,
+    .show_nodes = false
   };
 
   if (!load_nodes_from_file(&graph, "assets/nodes.csv")) {
@@ -71,14 +72,15 @@ int main(int argc, char* argv[]) {
     SDL_RenderClear(ctx.renderer);
 
     const Path* path_to_render = ui_state.show_path && ui_state.current_path.length > 0 ? &ui_state.current_path : NULL;
-    render_graph(&ctx, &graph, path_to_render, ui_state.hovered_node_id);
+    render_graph(&ctx, &graph, path_to_render, ui_state.hovered_node_id, ui_state.show_nodes);
 
     render_ui_panel(&ctx, &ui_state);
 
     UIButton buttons[] = {
-      {{ctx.width - 180, 120, 160, 40}, "Show path\0", ui_state.show_path, {50, 200, 0, 255}},
+      {{ctx.width - 180, 120, 160, 40}, "Show path\0", ui_state.show_path, {50, 200, 50, 255}},
       {{ctx.width - 180, 170, 160, 40}, "Set start\0", ui_state.mode == MODE_SELECT_START, {200, 50, 50, 255}},
       {{ctx.width - 180, 220, 160, 40}, "Set end\0", ui_state.mode == MODE_SELECT_END, {50, 50, 200, 255}},
+      {{ctx.width - 180, 270, 160, 40}, "Show nodes\0", ui_state.show_nodes, {50, 200, 200, 255}}
     };
 
     for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {

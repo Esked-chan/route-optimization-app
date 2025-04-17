@@ -31,7 +31,7 @@ typedef struct {
 
 void init_render_context(RenderContext* ctx, const char* title, int width, int height);
 void cleanup_render_context(RenderContext* ctx);
-void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id);
+void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id, bool show_nodes);
 SDL_FPoint transform_point(RenderContext* ctx, SDL_FPoint point);
 
 #endif // RENDER_H
