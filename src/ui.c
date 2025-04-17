@@ -93,7 +93,9 @@ void handle_events(SDL_Event *event, Graph* graph, UIState* ui_state, RenderCont
                 float dy = clicked_node->position.y - ui_state->connection_start->position.y;
                 float distance = sqrtf(dx * dx + dy * dy);
 
-                if (add_connection(graph, ui_state->connection_start->id, clicked_node->id, distance, "MANUAL STREET NAME\0")) {
+                float friction = 1.f;
+
+                if (add_connection(graph, ui_state->connection_start->id, clicked_node->id, distance, friction, "MANUAL STREET NAME\0")) {
                   SDL_Log("Connection added from node %d to node %d with weight %f", ui_state->connection_start->id, clicked_node->id, distance);
                 } else {
                   SDL_Log("Failed to add connection from node %d to node %d", ui_state->connection_start->id, clicked_node->id);

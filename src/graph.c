@@ -71,7 +71,7 @@ int add_node(Graph* graph, SDL_FPoint position) {
   return graph->node_count++;
 }
 
-bool add_connection(Graph* graph, int from, int to, float weight, const char* street_name) {
+bool add_connection(Graph* graph, int from, int to, float distance, float friction, const char* street_name) {
   if (from < 0 || from >= graph->node_count || to < 0 || to >= graph->node_count) {
     SDL_Log("Invalid node IDs: %d, %d", from, to);
     return false;
@@ -97,13 +97,19 @@ bool add_connection(Graph* graph, int from, int to, float weight, const char* st
     return false;
   }
   
+  float weight = distance * (1 / friction);
+
   from_node->connections[from_node->connection_count] = to;
   from_node->connection_weights[from_node->connection_count] = weight;
+  from_node->connection_lengths[from_node->connection_count] = distance;
+  from_node->connection_friction[from_node->connection_count] = friction;
   from_node->street_names[from_node->connection_count] = strdup(street_name);
   from_node->connection_count++;
 
   to_node->connections[to_node->connection_count] = from;
   to_node->connection_weights[to_node->connection_count] = weight;
+  to_node->connection_lengths[to_node->connection_count] = distance;
+  to_node->connection_friction[to_node->connection_count] = friction;
   to_node->street_names[to_node->connection_count] = strdup(street_name);
   to_node->connection_count++;
 

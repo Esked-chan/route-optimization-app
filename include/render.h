@@ -22,6 +22,8 @@ typedef struct {
 } UIButton;
 
 #define CONNECTION_COLOR (SDL_Color){100, 100, 100, 255}
+#define LOW_FRICTION_COLOR (SDL_Color){200, 50, 50, 255}
+#define HIGH_FRICTION_COLOR (SDL_Color){50, 200, 50, 255}
 #define PATH_COLOR (SDL_Color){200, 20, 200, 255}
 
 void init_render_context(RenderContext* ctx, const char* title, int width, int height);

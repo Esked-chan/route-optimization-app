@@ -8,6 +8,8 @@
 #include "SDL3/SDL.h"
 #include <stdio.h>
 #include <signal.h>
+#include <time.h>
+#include <stdlib.h>
 
 void signal_handler(int sig) {
   fprintf(stderr, "Error: signal %d\n", sig);
@@ -19,6 +21,8 @@ int main(int argc, char* argv[]) {
 
   signal(SIGSEGV, signal_handler);
   signal(SIGABRT, signal_handler);
+  
+  srand((unsigned int)time(NULL));
 
   RenderContext ctx;
   init_render_context(&ctx, "Graph path finding", 1600, 720);

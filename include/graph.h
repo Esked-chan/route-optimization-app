@@ -30,7 +30,7 @@ typedef struct {
 
 void init_graph(Graph* graph);
 int add_node(Graph* graph, SDL_FPoint position);
-bool add_connection(Graph* graph, int from, int to, float weight, const char* street_name);
+bool add_connection(Graph* graph, int from, int to, float distance, float friction, const char* street_name);
 Node* get_node_from_pos(Graph* graph, SDL_FPoint position);
 void update_node_pos(Graph* graph, int id, SDL_FPoint position);
 void clear_graph(Graph* graph);

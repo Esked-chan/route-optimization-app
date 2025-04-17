@@ -84,9 +84,16 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
 
       if (connected_id > i) {
         const Node* connected_node = &graph->nodes[connected_id];
+        SDL_Color color = {
+          // Interpolate color
+          (HIGH_FRICTION_COLOR.r - LOW_FRICTION_COLOR.r) * graph->nodes[i].connection_friction[j] + LOW_FRICTION_COLOR.r,
+          (HIGH_FRICTION_COLOR.g - LOW_FRICTION_COLOR.g) * graph->nodes[i].connection_friction[j] + LOW_FRICTION_COLOR.g,
+          (HIGH_FRICTION_COLOR.b - LOW_FRICTION_COLOR.b) * graph->nodes[i].connection_friction[j] + LOW_FRICTION_COLOR.b,
+          255
+        };
         draw_thick_line(ctx->renderer,
           node->position.x, node->position.y,
-          connected_node->position.x, connected_node->position.y, 2.f, CONNECTION_COLOR);
+          connected_node->position.x, connected_node->position.y, 3.f, color);
       }
     }
   }

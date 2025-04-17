@@ -43,7 +43,8 @@ bool load_connections_from_file(Graph* graph, const char* filename) {
     float length;
     char name[128];
     if (sscanf(line, "%d,%d,%f,%s", &source, &target, &length, name) == 4) {
-      if (!add_connection(graph, source, target, length, name)) {
+      float friction = 0.1f + ((float)rand() / RAND_MAX) * (0.9f - 0.1f);
+      if (!add_connection(graph, source, target, length, friction, name)) {
         fprintf(stderr, "Error adding connection from %d to %d\n", source, target);
         fclose(file);
         return false;
