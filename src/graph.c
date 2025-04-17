@@ -14,6 +14,20 @@ void init_graph(Graph* graph) {
     graph->nodes[i].is_start = false;
     graph->nodes[i].is_end = false;
     graph->nodes[i].street_names = malloc(MAX_CONNECTIONS * sizeof(char*));
+    graph->nodes[i].connections = malloc(MAX_CONNECTIONS * sizeof(int));
+    graph->nodes[i].connection_lengths = malloc(MAX_CONNECTIONS * sizeof(float));
+    graph->nodes[i].connection_friction = malloc(MAX_CONNECTIONS * sizeof(float));
+    graph->nodes[i].connection_weights = malloc(MAX_CONNECTIONS * sizeof(float));
+    if (
+      !graph->nodes[i].connections || 
+      !graph->nodes[i].connection_weights ||
+      !graph->nodes[i].connection_lengths ||
+      !graph->nodes[i].connection_friction ||
+      !graph->nodes[i].street_names
+    ) {
+      SDL_Log("Failed to allocate memory for connections or weights");
+      exit(EXIT_FAILURE);
+    }
   }
 }
 
@@ -123,6 +137,10 @@ void clear_graph(Graph* graph) {
       free(graph->nodes[i].street_names[j]);
     }
     free(graph->nodes[i].street_names);
+    free(graph->nodes[i].connections);
+    free(graph->nodes[i].connection_weights);
+    free(graph->nodes[i].connection_lengths);
+    free(graph->nodes[i].connection_friction);
   }
   init_graph(graph);
 }

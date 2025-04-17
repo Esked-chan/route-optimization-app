@@ -10,9 +10,11 @@
 typedef struct {
     SDL_FPoint position;
     int id;
-    int connections[MAX_CONNECTIONS];
+    int* connections;
     int connection_count;
-    float connection_weights[MAX_CONNECTIONS];
+    float* connection_lengths;
+    float* connection_friction;
+    float* connection_weights;
     bool is_selected;
     bool is_start;
     bool is_end;
