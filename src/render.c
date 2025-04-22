@@ -94,6 +94,19 @@ void draw_thick_line(SDL_Renderer* renderer, float x1, float y1, float x2, float
   SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
 }
 
+// This is wildly inefficient holy shit
+void draw_circle(SDL_Renderer* renderer, float x, float y, float r) {
+  for (int w = 0; w < r * 2; w++) {
+    for (int h = 0; h < r * 2; h++) {
+      float dx = r - w;
+      float dy = r - h;
+      if ((dx * dx + dy * dy) <= (r * r)) {
+        SDL_RenderPoint(renderer, x + dx, y + dy);
+      }
+    }
+  }
+}
+
 void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int hovered_node_id, bool show_nodes) {
   // Draw connections
   for (int i = 0; i < graph->node_count; i++) {
@@ -163,7 +176,11 @@ void render_graph(RenderContext* ctx, const Graph* graph, const Path* path, int 
         NODE_RADIUS * 2 * ctx->zoom,
         NODE_RADIUS * 2 * ctx->zoom
       };
-      SDL_RenderFillRect(ctx->renderer, &node_rect);
+      if (show_nodes) {
+        SDL_RenderFillRect(ctx->renderer, &node_rect);
+      } else {
+        draw_circle(ctx->renderer, transformed_pos.x, transformed_pos.y, NODE_RADIUS * ctx->zoom);
+      }
 
       if (ctx->font) {
         if (node->id == hovered_node_id) {

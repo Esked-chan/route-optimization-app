@@ -26,6 +26,8 @@ bool dijkstra(const Graph* graph, int start, int end, Path* path) {
     path->nodes[0] = start;
     path->length = 1;
     path->total_cost = 0.0f;
+    path->distance = 0.0f;
+    path->time = 0.0f;
     return true;
   }
 
@@ -39,6 +41,7 @@ bool dijkstra(const Graph* graph, int start, int end, Path* path) {
   }
 
   priorities[start].distance = 0;
+  path->distance = 0.f;
 
   for (int unvisited_count = graph->node_count; unvisited_count > 0; unvisited_count--) {
     int current = -1;
@@ -105,8 +108,23 @@ bool dijkstra(const Graph* graph, int start, int end, Path* path) {
     path->nodes[path->length - 1 - i] = temp;
   }
 
+  path->distance = 0.f;
+  for (int i = 0; i < path->length - 1; i++) {
+    int from = path->nodes[i];
+    int to = path->nodes[i + 1];
+    for (int j = 0; j < graph->nodes[from].connection_count; j++) {
+      if (graph->nodes[from].connections[j] == to) {
+        path->distance += graph->nodes[from].connection_lengths[j];
+        break;
+      }
+    }
+  }
+
+  float speed = (50.f / 60.f) * 1000; // ~833.3 m/min (50 km/h)
+
   path->total_cost = priorities[end].distance;
-  SDL_Log("Path found from %d to %d with cost %.2f", start, end, path->total_cost);
-  SDL_Log("Path length: %d", path->length);
+  float travel_time = path->total_cost / speed;
+  path->time = travel_time;
+  SDL_Log("Path found from %d to %d, total distance is %.1f metres, travel time is %.2f minutes.", start, end, path->distance, travel_time);
   return true;
 }

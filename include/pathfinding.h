@@ -10,6 +10,8 @@ typedef struct Path {
   int nodes[MAX_PATH_LENGTH];
   int length;
   float total_cost;
+  float distance;
+  float time;
 } Path;
 
 bool dijkstra(const Graph *graph, int start, int end, Path* path);

@@ -1,5 +1,7 @@
 #include "ui_panel.h"
 
+#include <stdio.h>
+
 void render_ui_panel(RenderContext* ctx, const UIState* ui_state) {
   SDL_FRect panel = {
     ctx->width - 200, 0,
@@ -20,6 +22,22 @@ void render_ui_panel(RenderContext* ctx, const UIState* ui_state) {
     SDL_RenderTexture(ctx->renderer, title_texture, NULL, &title_rect);
     SDL_DestroySurface(title_surface);
     SDL_DestroyTexture(title_texture);
+
+
+    char travel_info_text[200];
+    snprintf(travel_info_text, sizeof(travel_info_text), 
+      "Travel distance\n%1.f metres\nWeighted distance\n%1.f units (metres)\nTravel time\n%.1f minutes", 
+      ui_state->current_path.distance, ui_state->current_path.total_cost, ui_state->current_path.time);
+    SDL_Surface* travel_info_surface = TTF_RenderText_Solid_Wrapped(ctx->font, travel_info_text, 0, white, 0);
+    SDL_Texture* travel_info_texture = SDL_CreateTextureFromSurface(ctx->renderer, travel_info_surface);
+    SDL_FRect travel_info_rect = {
+      ctx->width - 200 + (200 - travel_info_surface->w) / 2,
+      ctx->height - 100 - travel_info_surface->h,
+      travel_info_surface->w, travel_info_surface->h
+    };
+    SDL_RenderTexture(ctx->renderer, travel_info_texture, NULL, &travel_info_rect);
+    SDL_DestroySurface(travel_info_surface);
+    SDL_DestroyTexture(travel_info_texture);
   }
 }
 

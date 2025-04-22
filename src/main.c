@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
       handle_events(&event, &graph, &ui_state, &ctx);
     }
 
-    SDL_SetRenderDrawColor(ctx.renderer, 230, 230, 230, 255);
+    SDL_SetRenderDrawColor(ctx.renderer, 32, 42, 60, 255);
     SDL_RenderClear(ctx.renderer);
 
     const Path* path_to_render = ui_state.show_path && ui_state.current_path.length > 0 ? &ui_state.current_path : NULL;

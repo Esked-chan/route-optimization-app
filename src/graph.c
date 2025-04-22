@@ -3,6 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+float weighting_function(float friction) {
+  const float epsilon = 1e-6f;
+  const float power = 0.2f;
+  const float max_friction = 0.9f;
+
+  float weight = 1.f / powf(friction + epsilon, power); 
+  float min_weight = 1.f / powf(max_friction + epsilon, power);
+  return weight / min_weight;
+}
+
 void init_graph(Graph* graph) {
   graph->node_count = 0;
   graph->selected_start = -1;
@@ -96,8 +106,8 @@ bool add_connection(Graph* graph, int from, int to, float distance, float fricti
     SDL_Log("Max connections reached for node %d", to);
     return false;
   }
-  
-  float weight = distance * (1 / friction);
+
+  float weight = distance * weighting_function(friction);
 
   from_node->connections[from_node->connection_count] = to;
   from_node->connection_weights[from_node->connection_count] = weight;
