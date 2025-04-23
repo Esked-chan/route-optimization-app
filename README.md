@@ -1,6 +1,7 @@
 # Route Optimization Project
 
-This project is a graphical application for creating, visualizing, and optimizing paths on a graph. It provides an interactive interface for adding nodes, creating connections, and calculating the shortest path between two points using Dijkstra's algorithm.
+This project was made for the 2025 spring semester project at Lapin AMK.
+This is a graphical application for loading Jyväskylä's roadmap and find a path between two points via random weighted roads (friction).
 
 ## Features
 
@@ -21,20 +22,23 @@ This project is a graphical application for creating, visualizing, and optimizin
 - **Keyboard Shortcuts**:
   - `P`: Toggle path visibility.
   - `C`: Clear the graph.
-  - Other shortcuts for switching modes (e.g., add nodes, delete nodes, etc.).
+  - `3`: Select start node
+  - `4`: Select end node
 
 ## Build Instructions
+**ATTENTION!!**
+This project is not made for others to run, meaning there are hardcoded paths in the CMake file. In case you want to build this project (for whatever reason), rewrite the paths.
 
-This project uses CMake for building. Follow these steps to build the project:
+Follow these steps to build the project:
 
 1. **Install Dependencies**:
    - SDL3 library (for rendering and input handling).
    - SDL3_ttf library (for text rendering).
 
 2. **Generate Build Files**:
-   ```bash
-   cmake -S . -B build
-   ```
+  ```bash
+  cmake -S . -B build
+  ```
 
 3. **Build the project**:
   ```bash
